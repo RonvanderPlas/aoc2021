@@ -1,31 +1,37 @@
+from functools import lru_cache
 import math
+import time
+start_time = time.time()
 
 def open_file_as_list():
-    f = open('temp.txt')
+    f = open('day6.txt')
     lines = f.readlines()
     file_list = list(lines)
     return file_list
 
+@lru_cache(maxsize=None)
+def calculate_fish(days, age):
+    grand_children = 0
+    if age > days:
+        return 0
+    else:
+        children = math.floor((days-age)/7)+1
+        
+        for i in range(0, children):
+            new_days = days-age-(i*7)
+            grand_children += calculate_fish(new_days, 9)
+        return grand_children + children
 
 #open file
 f = open_file_as_list()
 
 fishy_list = list(map(int,f[0].split(',')))
-days = 18
-age = 4
+days = 255
 
-print(math.floor((days-age)/7)+1)
+total_fish = len(fishy_list)
 
-# for day in range(days):
-#     print(day)
-#     for i, fish in enumerate(fishy_list):
-#         if fish == 0:
-#             fishy_list.append(9)
-#             fishy_list[i] = 6
-#         else:
-#             fishy_list[i] = fish -1
-    
-    # print(f'Day[{day+1}] Fish: {len(fishy_list)} Lst:{fishy_list} ')
+for i in range(len(fishy_list)):
+    total_fish += calculate_fish(days, fishy_list[i])
 
-
-# print(len(fishy_list))
+print(total_fish)
+print("--- %s seconds ---" % (time.time() - start_time))
